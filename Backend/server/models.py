@@ -1,8 +1,9 @@
-from .config import db
+from config import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy_serializer import SerializerMixin
 
 # 🔐 MEMBER: Can be player, coach, executive, or just member
-class Member(db.Model):
+class Member(db.Model, SerializerMixin):
     __tablename__ = 'members'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -16,6 +17,8 @@ class Member(db.Model):
     players = db.relationship('Player', backref='member')
     coaches = db.relationship('Coach', backref='member')
 
+    serialize_rules = ('-players', '-coaches', '-_password_hash',)
+
     def set_password(self, password):
         self._password_hash = generate_password_hash(password)
 
@@ -24,7 +27,7 @@ class Member(db.Model):
 
 
 # 🏉 PLAYER: Linked to a member
-class Player(db.Model):
+class Player(db.Model, SerializerMixin):
     __tablename__ = 'players'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -37,9 +40,11 @@ class Player(db.Model):
 
     participations = db.relationship('MatchParticipant', backref='player')
 
+    serialize_rules = ('-participations', '-member',)
+
 
 # 🧠 COACH: Linked to a member
-class Coach(db.Model):
+class Coach(db.Model, SerializerMixin):
     __tablename__ = 'coaches'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -49,9 +54,11 @@ class Coach(db.Model):
     experience = db.Column(db.Integer, nullable=False)    # in years
     member_id = db.Column(db.Integer, db.ForeignKey('members.id'))
 
+    serialize_rules = ('-member',)
+
 
 # 📅 MATCH: A scheduled match
-class Match(db.Model):
+class Match(db.Model, SerializerMixin):
     __tablename__ = 'matches'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -63,9 +70,11 @@ class Match(db.Model):
 
     participants = db.relationship('MatchParticipant', backref='match', cascade="all, delete-orphan")
 
+    serialize_rules = ('-participants',)
+
 
 # 🤝 MATCH PARTICIPANT: Player involvement in a match
-class MatchParticipant(db.Model):
+class MatchParticipant(db.Model, SerializerMixin):
     __tablename__ = 'match_participants'
 
     id = db.Column(db.Integer, primary_key=True)
