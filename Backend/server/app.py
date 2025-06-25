@@ -1,23 +1,19 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
+# extensions.py
 from flask_migrate import Migrate
-from flask_cors import CORS
-from models import db, Member, Player, Coach, Match, MatchParticipant
-
-
-
+from flask import Flask
+from flask_cors import CORS 
+from models import Member, Player, Coach, Match, MatchParticipant, db 
+from flask import jsonify, request
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///rugby.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///hightackle.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'dev-secret-key'
+app.json.compact = False
 
-app = Flask(__name__)  
-
-
-db.init_app(app)
-migrate = Migrate(app, db)
+# Extensions
 CORS(app)
+migrate = Migrate(app, db)
+db.init_app(app)
 
 @app.route('/')
 def home():
@@ -141,5 +137,5 @@ def get_match_participants():
         "is_starting": mp.is_starting
     } for mp in participants]), 200
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(port=5555, debug=True)
