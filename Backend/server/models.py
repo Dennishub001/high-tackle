@@ -21,10 +21,11 @@ class Member(db.Model, SerializerMixin):
     status = db.Column(db.String, default="active")       # "active", "inactive"
     _password_hash = db.Column(db.String, nullable=False)
 
-    players = db.relationship('Player', backref='member')
-    coaches = db.relationship('Coach', backref='member')
+    # 1-to-1 relationships
+    player = db.relationship('Player', backref='member', uselist=False)
+    coach = db.relationship('Coach', backref='member', uselist=False)
 
-    serialize_rules = ('-players', '-coaches', '-_password_hash',)
+    serialize_rules = ('-player', '-coach', '-_password_hash',)
 
     def set_password(self, password):
         self._password_hash = generate_password_hash(password)
@@ -42,11 +43,12 @@ class Player(db.Model, SerializerMixin):
     height = db.Column(db.Float, nullable=False)          # in cm
     weight = db.Column(db.Float, nullable=False)          # in kg
     position = db.Column(db.String)
-    member_id = db.Column(db.Integer, db.ForeignKey('members.id'))
+    member_id = db.Column(db.Integer, db.ForeignKey('members.id'), unique=True)  # 1-to-1
 
-    participations = db.relationship('MatchParticipant', backref='player')
+    participations = db.relationship('MatchParticipant', backref='player', cascade="all, delete-orphan")
 
     serialize_rules = ('-participations', '-member',)
+
 
 class Coach(db.Model, SerializerMixin):
     __tablename__ = 'coaches'
@@ -56,7 +58,7 @@ class Coach(db.Model, SerializerMixin):
     specialty = db.Column(db.String)
     certification = db.Column(db.String)
     experience = db.Column(db.Integer, nullable=False)    # in years
-    member_id = db.Column(db.Integer, db.ForeignKey('members.id'))
+    member_id = db.Column(db.Integer, db.ForeignKey('members.id'), unique=True)  # 1-to-1
 
     serialize_rules = ('-member',)
 
@@ -66,10 +68,10 @@ class Match(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String, nullable=False)           # "2025-07-01"
-    time = db.Column(db.String, nullable=False)           #  "15:00"
+    time = db.Column(db.String, nullable=False)           # "15:00"
     venue = db.Column(db.String, nullable=False)
     score = db.Column(db.String, nullable=True)           # "15-10"
-    status = db.Column(db.String, default="scheduled")    #, "scheduled", "completed"
+    status = db.Column(db.String, default="scheduled")    # "scheduled", "completed"
 
     participants = db.relationship('MatchParticipant', backref='match', cascade="all, delete-orphan")
 
@@ -79,11 +81,15 @@ class Match(db.Model, SerializerMixin):
 class MatchParticipant(db.Model, SerializerMixin):
     __tablename__ = 'match_participants'
 
+    # Many-to-many association table with extra fields
+    player_id = db.Column(db.Integer, db.ForeignKey('players.id'), primary_key=True)
+    match_id = db.Column(db.Integer, db.ForeignKey('matches.id'), primary_key=True)
+
     tries = db.Column(db.Integer, default=0)
     conversions = db.Column(db.Integer, default=0)
     penalties = db.Column(db.Integer, default=0)
     tackles = db.Column(db.Integer, default=0)
     meters_gained = db.Column(db.Integer, default=0)
     turnovers_won = db.Column(db.Integer, default=0)
-    
+
     serialize_rules = ('-match', '-player',)
