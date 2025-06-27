@@ -7,8 +7,18 @@ name = "pypi"
 flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
-
-[dev-packages]
+sqlalchemy-serializer = "*"
+flask-cors = "*"
+Werkzeug = "*"
+pytest = "*"
+ipdb = "*"
+importlib-metadata = "*"
+importlib-resources = "*"
+Faker = "*"
+sqlalchemy = "*"
+mail = "*"
 
 [requires]
-python_version = "3.12"
+python_full_version = "3.8.13"
+
+[dev-packages]

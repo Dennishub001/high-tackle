@@ -6,7 +6,7 @@ function PlayersPage() {
   const [players, setPlayers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5555/players")
+    fetch("http://localhost:5000/players")
       .then((res) => res.json())
       .then((data) => setPlayers(data))
       .catch((err) => console.error("Error fetching players:", err));

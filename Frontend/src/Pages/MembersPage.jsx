@@ -5,7 +5,7 @@ function MembersPage() {
   const [members, setMembers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5555/members")
+    fetch("http://localhost:5000/members")
       .then((res) => res.json())
       .then((data) => setMembers(data))
       .catch((err) => console.error("Error fetching members:", err));

@@ -6,6 +6,7 @@ function MemberCard({ member }) {
     <div className="member-card">
       
       <h3>{member.name}</h3>
+      <p><strong>Name:</strong> {member.name}</p>
       <p><strong>Email:</strong> {member.email}</p>
       <p><strong>Phone:</strong> {member.phone}</p>
       <p><strong>Role:</strong> {member.role}</p>

@@ -1,8 +1,8 @@
 """create tables
 
-Revision ID: b5d981bf35df
+Revision ID: ea7dcd3674c6
 Revises: 
-Create Date: 2025-06-25 04:43:38.147222
+Create Date: 2025-06-26 16:17:07.894409
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b5d981bf35df'
+revision = 'ea7dcd3674c6'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -48,7 +48,8 @@ def upgrade():
     sa.Column('experience', sa.Integer(), nullable=False),
     sa.Column('member_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['member_id'], ['members.id'], name=op.f('fk_coaches_member_id_members')),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('member_id')
     )
     op.create_table('players',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -59,18 +60,21 @@ def upgrade():
     sa.Column('position', sa.String(), nullable=True),
     sa.Column('member_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['member_id'], ['members.id'], name=op.f('fk_players_member_id_members')),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('member_id')
     )
     op.create_table('match_participants',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('match_id', sa.Integer(), nullable=False),
     sa.Column('player_id', sa.Integer(), nullable=False),
-    sa.Column('score', sa.Integer(), nullable=True),
-    sa.Column('minutes_played', sa.Integer(), nullable=True),
-    sa.Column('is_starting', sa.Boolean(), nullable=True),
+    sa.Column('match_id', sa.Integer(), nullable=False),
+    sa.Column('tries', sa.Integer(), nullable=True),
+    sa.Column('conversions', sa.Integer(), nullable=True),
+    sa.Column('penalties', sa.Integer(), nullable=True),
+    sa.Column('tackles', sa.Integer(), nullable=True),
+    sa.Column('meters_gained', sa.Integer(), nullable=True),
+    sa.Column('turnovers_won', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['match_id'], ['matches.id'], name=op.f('fk_match_participants_match_id_matches')),
     sa.ForeignKeyConstraint(['player_id'], ['players.id'], name=op.f('fk_match_participants_player_id_players')),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('player_id', 'match_id')
     )
     # ### end Alembic commands ###
 

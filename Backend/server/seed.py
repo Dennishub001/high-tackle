@@ -1,133 +1,95 @@
+# seed.py
+
+# Import your Flask app and models
 from app import app
 from models import db, Member, Player, Coach, Match, MatchParticipant
-from werkzeug.security import generate_password_hash
-import random
 from datetime import datetime, timedelta
+import random
+
+# -------------------------------
+# Step 1: Create Member accounts
+# -------------------------------
 
 def create_members():
-    members = [
+    print("🌱 Creating club members...")
+
+    member_info = [
         # Players
-        Member(
-            username="kipchoge_15",
-            phone="254700123456",
-            email="kipchoge@grassroots.ke",
-            role="player",
-            _password_hash=generate_password_hash("rugby@123")
-        ),
-        Member(
-            username="wanjiru_10",
-            phone="254711234567",
-            email="wanjiru@grassroots.ke",
-            role="player",
-            _password_hash=generate_password_hash("rugby@123")
-        ),
-        Member(
-            username="odhiambo_7",
-            phone="254722345678",
-            email="odhiambo@grassroots.ke",
-            role="player",
-            _password_hash=generate_password_hash("rugby@123")
-        ),
-        Member(
-            username="akoth_12",
-            phone="254733456789",
-            email="akoth@grassroots.ke",
-            role="player",
-            _password_hash=generate_password_hash("rugby@123")
-        ),
-        Member(
-            username="kamau_3",
-            phone="254744567890",
-            email="kamau@grassroots.ke",
-            role="player",
-            _password_hash=generate_password_hash("rugby@123")
-        ),
-        
+        {"username": "kipchoge_15", "phone": "254700123456", "email": "kipchoge@grassroots.ke", "role": "player"},
+        {"username": "wanjiru_10", "phone": "254711234567", "email": "wanjiru@grassroots.ke", "role": "player"},
+        {"username": "odhiambo_7", "phone": "254722345678", "email": "odhiambo@grassroots.ke", "role": "player"},
+        {"username": "akoth_12", "phone": "254733456789", "email": "akoth@grassroots.ke", "role": "player"},
+        {"username": "kamau_3", "phone": "254744567890", "email": "kamau@grassroots.ke", "role": "player"},
+
         # Coaches
-        Member(
-            username="coach_mwamba",
-            phone="254755678901",
-            email="mwamba@grassroots.ke",
-            role="coach",
-            _password_hash=generate_password_hash("coach@123")
-        ),
-        Member(
-            username="coach_impala",
-            phone="254766789012",
-            email="impala@grassroots.ke",
-            role="coach",
-            _password_hash=generate_password_hash("coach@123")
-        ),
-        
-        # Team Manager
-        Member(
-            username="manager_kenya",
-            phone="254777890123",
-            email="manager@grassroots.ke",
-            role="executive",
-            _password_hash=generate_password_hash("admin@123")
-        )
+        {"username": "coach_mwamba", "phone": "254755678901", "email": "mwamba@grassroots.ke", "role": "coach"},
+        {"username": "coach_impala", "phone": "254766789012", "email": "impala@grassroots.ke", "role": "coach"},
+
+        # Executive
+        {"username": "manager_kenya", "phone": "254777890123", "email": "manager@grassroots.ke", "role": "executive"},
     ]
-    
-    db.session.add_all(members)
+
+    members = []
+
+    for info in member_info:
+        member = Member(
+            username=info["username"],
+            phone=info["phone"],
+            email=info["email"],
+            role=info["role"],
+            status="active"  # default for new members
+        )
+        # Set password using the method from your API
+        default_password = "admin@123" if info["role"] == "executive" else "rugby@123"
+        member.set_password(default_password)
+
+        db.session.add(member)
+        members.append(member)
+
     db.session.commit()
+    print(f"✅ {len(members)} members created.\n")
     return members
 
+# -------------------------------
+# Step 2: Create Players
+# -------------------------------
+
 def create_players(members):
-    positions = [
-        "Prop", "Hooker", "Lock", "Flanker", 
-        "Number 8", "Scrum-half", "Fly-half",
-        "Center", "Wing", "Fullback"
+    print("🏉 Adding player profiles...")
+
+    players_data = [
+        {"name": "Eliud Kipchoge", "age": 22, "height": 182, "weight": 85, "position": "Fullback", "member": members[0]},
+        {"name": "Grace Wanjiru", "age": 21, "height": 168, "weight": 65, "position": "Fly-half", "member": members[1]},
+        {"name": "James Odhiambo", "age": 24, "height": 178, "weight": 92, "position": "Flanker", "member": members[2]},
+        {"name": "Mercy Akoth", "age": 20, "height": 170, "weight": 68, "position": "Center", "member": members[3]},
+        {"name": "Paul Kamau", "age": 23, "height": 185, "weight": 110, "position": "Prop", "member": members[4]},
     ]
-    
-    players = [
-        Player(
-            name="Eliud Kipchoge",
-            age=22,
-            height=182.0,
-            weight=85.0,
-            position="Fullback",
-            member_id=members[0].id
-        ),
-        Player(
-            name="Grace Wanjiru",
-            age=21,
-            height=168.0,
-            weight=65.0,
-            position="Fly-half",
-            member_id=members[1].id
-        ),
-        Player(
-            name="James Odhiambo",
-            age=24,
-            height=178.0,
-            weight=92.0,
-            position="Flanker",
-            member_id=members[2].id
-        ),
-        Player(
-            name="Mercy Akoth",
-            age=20,
-            height=170.0,
-            weight=68.0,
-            position="Center",
-            member_id=members[3].id
-        ),
-        Player(
-            name="Paul Kamau",
-            age=23,
-            height=185.0,
-            weight=110.0,
-            position="Prop",
-            member_id=members[4].id
+
+    players = []
+
+    for data in players_data:
+        player = Player(
+            name=data["name"],
+            age=data["age"],
+            height=data["height"],
+            weight=data["weight"],
+            position=data["position"],
+            member_id=data["member"].id
         )
-    ]
-    
-    db.session.add_all(players)
+        db.session.add(player)
+        players.append(player)
+
     db.session.commit()
+    print(f"✅ {len(players)} players created.\n")
     return players
 
+# -------------------------------
+# Step 3: Create Coaches
+# -------------------------------
+
 def create_coaches(members):
+    print("🧑‍🏫 Adding coaches...")
+
     coaches = [
         Coach(
             name="John Mwamba",
@@ -144,110 +106,107 @@ def create_coaches(members):
             member_id=members[6].id
         )
     ]
-    
+
     db.session.add_all(coaches)
     db.session.commit()
+    print(f"✅ {len(coaches)} coaches created.\n")
     return coaches
 
+# -------------------------------
+# Step 4: Create Matches
+# -------------------------------
+
 def create_matches():
-    matches = []
+    print("📅 Scheduling matches...")
+
     venues = [
         "Nairobi School Ground", "Kakamega Showground", 
-        "Kisumu Polytechnic", "Mombasa Sports Club",
+        "Kisumu Polytechnic", "Mombasa Sports Club", 
         "Nakuru Athletic Club"
     ]
     opponents = [
-        "Slums Rugby", "Village XV", "School Select",
+        "Slums Rugby", "Village XV", "School Select", 
         "Community Warriors", "County Combined"
     ]
-    
-    for i in range(1, 6):
-        match_date = datetime.now() + timedelta(days=i*21) 
-        is_completed = i < 3 
-        
 
-        home_score = random.randint(5, 25)
-        away_score = random.randint(5, 25)
-        
-        matches.append(
-            Match(
-                date=match_date.strftime("%Y-%m-%d"),
-                time="15:00",
-                venue=f"{venues[i%5]} vs {opponents[i%5]}",
-                status="completed" if is_completed else "scheduled",
-                score=f"{home_score}-{away_score}" if is_completed else None
-            )
+    matches = []
+
+    for i in range(5):
+        date = datetime.now() + timedelta(days=i * 14)
+        is_past = i < 3  # mark first 3 as completed
+        home_score = random.randint(10, 25)
+        away_score = random.randint(10, 25)
+
+        match = Match(
+            date=date.strftime("%Y-%m-%d"),
+            time="15:00",
+            venue=f"{venues[i]} vs {opponents[i]}",
+            status="completed" if is_past else "scheduled",
+            score=f"{home_score}-{away_score}" if is_past else None
         )
-    
-    db.session.add_all(matches)
+
+        db.session.add(match)
+        matches.append(match)
+
     db.session.commit()
+    print(f"✅ {len(matches)} matches created.\n")
     return matches
 
-def create_match_participants(players, matches):
+# -------------------------------
+# Step 5: Add Match Participants
+# -------------------------------
 
-    rugby_stats = [
-        {"tries": 1, "conversions": 0, "penalties": 0, "tackles": 5, "meters_gained": 25, "turnovers_won": 1},
+def create_match_participants(players, matches):
+    print("📊 Logging match performance stats...")
+
+    sample_stats = [
+        {"tries": 1, "conversions": 0, "penalties": 0, "tackles": 5, "meters_gained": 20, "turnovers_won": 1},
         {"tries": 0, "conversions": 1, "penalties": 0, "tackles": 3, "meters_gained": 15, "turnovers_won": 0},
         {"tries": 0, "conversions": 0, "penalties": 1, "tackles": 8, "meters_gained": 10, "turnovers_won": 2},
+        {"tries": 2, "conversions": 0, "penalties": 0, "tackles": 4, "meters_gained": 40, "turnovers_won": 1},
         {"tries": 0, "conversions": 0, "penalties": 0, "tackles": 10, "meters_gained": 5, "turnovers_won": 1},
-        {"tries": 2, "conversions": 0, "penalties": 0, "tackles": 4, "meters_gained": 40, "turnovers_won": 1}
     ]
-    
+
     participants = []
-    
+
     for match in matches:
         for player in players:
-            stats = random.choice(rugby_stats) if match.status == "completed" else {
-                "tries": 0,
-                "conversions": 0,
-                "penalties": 0,
-                "tackles": 0,
-                "meters_gained": 0,
-                "turnovers_won": 0
-            }
-            
-            participants.append(
-                MatchParticipant(
-                    match_id=match.id,
-                    player_id=player.id,
-                    score=stats["tries"] * 5 + stats["conversions"] * 2 + stats["penalties"] * 3,
-                    minutes_played=random.choice([40, 50, 60, 70]),
-                    is_starting=random.choice([True, False]),
-                    tries=stats["tries"],
-                    conversions=stats["conversions"],
-                    penalties=stats["penalties"],
-                    tackles=stats["tackles"],
-                    meters_gained=stats["meters_gained"],
-                    turnovers_won=stats["turnovers_won"]
-                )
+            stats = random.choice(sample_stats) if match.status == "completed" else {k: 0 for k in sample_stats[0]}
+            participant = MatchParticipant(
+                match_id=match.id,
+                player_id=player.id,
+                minutes_played=random.choice([40, 50, 60]),
+                is_starting=random.choice([True, False]),
+                tries=stats["tries"],
+                conversions=stats["conversions"],
+                penalties=stats["penalties"],
+                tackles=stats["tackles"],
+                turnovers_won=stats["turnovers_won"]
             )
-    
-    db.session.add_all(participants)
+            db.session.add(participant)
+            participants.append(participant)
+
     db.session.commit()
+    print(f"✅ {len(participants)} match participants added.\n")
     return participants
+
+# -------------------------------
+# Run everything in order
+# -------------------------------
 
 def main():
     with app.app_context():
-        print("Clearing db...")
+        print("🔄 Resetting database...")
         db.drop_all()
         db.create_all()
-        
-        print("Seeding members...")
+
         members = create_members()
-        
-        print("Seeding players...")
         players = create_players(members)
-        
-        print("Seeding coaches...")
         coaches = create_coaches(members)
-        
-        print("Seeding  matches...")
         matches = create_matches()
-        
-        print("Seeding match participants...")
-        participants = create_match_participants(players, matches)
-        
-        print(" High tackle seeding complete!")
+        create_match_participants(players, matches)
+
+        print("🎉 Seeding complete! You are ready to use the High Tackle API.\n")
 
 if __name__ == "__main__":
     main()

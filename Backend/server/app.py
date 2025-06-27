@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
-from models import db, Member, Player, Match
+from models import db, Member, Player, Match, Coach
 from werkzeug.security import generate_password_hash
+import re
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///hightackle.db"
@@ -114,6 +115,19 @@ def get_players():
         "position": p.position,
         "member_id": p.member_id
     } for p in players]), 200
+
+#GET All Coaches
+@app.route('/coaches', methods=['GET'])
+def get_coaches():
+    coaches = Coach.query.all()
+    return jsonify([{
+        "id": c.id,
+        "name": c.name,
+        "specialty": c.specialty,
+        "certification": c.certification,
+        "experience": c.experience,
+        "member_id": c.member_id
+    } for c in coaches]), 200
 
 #GET All Matches
 @app.route('/matches', methods=['GET'])

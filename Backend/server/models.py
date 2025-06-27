@@ -43,7 +43,7 @@ class Player(db.Model, SerializerMixin):
     height = db.Column(db.Float, nullable=False)          # in cm
     weight = db.Column(db.Float, nullable=False)          # in kg
     position = db.Column(db.String)
-    member_id = db.Column(db.Integer, db.ForeignKey('members.id'), unique=True)  # 1-to-1
+    member_id = db.Column(db.Integer, db.ForeignKey('members.id'), unique=True)  
 
     participations = db.relationship('MatchParticipant', backref='player', cascade="all, delete-orphan")
 
@@ -84,12 +84,12 @@ class MatchParticipant(db.Model, SerializerMixin):
     # Many-to-many association table with extra fields
     player_id = db.Column(db.Integer, db.ForeignKey('players.id'), primary_key=True)
     match_id = db.Column(db.Integer, db.ForeignKey('matches.id'), primary_key=True)
-
+    minutes_played = db.Column(db.Integer, default=0)  # minutes played in the match
     tries = db.Column(db.Integer, default=0)
+    is_starting = db.Column(db.Boolean, default=False)  # whether the player started the match
     conversions = db.Column(db.Integer, default=0)
     penalties = db.Column(db.Integer, default=0)
     tackles = db.Column(db.Integer, default=0)
-    meters_gained = db.Column(db.Integer, default=0)
     turnovers_won = db.Column(db.Integer, default=0)
 
     serialize_rules = ('-match', '-player',)

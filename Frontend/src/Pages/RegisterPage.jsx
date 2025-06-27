@@ -5,9 +5,11 @@ import Swal from "sweetalert2";
 function RegisterPage() {
   const formik = useFormik({
     initialValues: {
-      name: "",
+      username: "",
+      phone: "",
       email: "",
       role: "", // player, coach, executive, or member
+      password: "",
     },
 
     onSubmit: async (values) => {
@@ -27,10 +29,17 @@ function RegisterPage() {
       <form onSubmit={formik.handleSubmit}>
         <input
           type="text"
-          name="name"
-          placeholder="Name"
+          name="username"
+          placeholder="Username"
           onChange={formik.handleChange}
-          value={formik.values.name}
+          value={formik.values.username}
+        />
+        <input
+          type="text"
+          name="phone"
+          placeholder="Phone"
+          onChange={formik.handleChange}
+          value={formik.values.phone}
         />
         <input
           type="email"
@@ -38,6 +47,13 @@ function RegisterPage() {
           placeholder="Email"
           onChange={formik.handleChange}
           value={formik.values.email}
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={formik.handleChange}
+          value={formik.values.password}
         />
         <select
           name="role"
