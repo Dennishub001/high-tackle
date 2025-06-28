@@ -4,8 +4,15 @@ from flask_migrate import Migrate
 from models import db, Member, Player, Match, Coach
 from werkzeug.security import generate_password_hash
 import re
+import jwt
+from datetime import datetime, timedelta
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your_super_secret_key'
+key = str(app.config['SECRET_KEY'])
+
+
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///hightackle.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
@@ -46,7 +53,34 @@ def register():
     db.session.add(member)
     db.session.commit()
 
-    return jsonify({"message": "Member registered successfully", "member": member.username}), 201
+    return jsonify({"message": "Member registered successfully", "member": member.username}), 20
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    member = Member.query.filter_by(email=email).first()
+    if not member:
+        return jsonify({'error': 'Invalid email or password'}), 401
+
+    print(dir(member))
+    print("password_hash:", getattr(member, 'password_hash', None))
+
+    if not check_password_hash(member.password_hash, password):
+        return jsonify({'error': 'Invalid email or password'}), 401
+
+    return jsonify({
+        'access_token': 'your_token_here',
+        'user': {
+            'id': member.id,
+            'email': member.email,
+            'username': member.username,
+            'role': member.role
+        }
+    }), 200
 
 #POST Player
 @app.route('/players', methods=['POST'])
@@ -193,4 +227,4 @@ def delete_match(id):
     return jsonify({"message": "Match deleted"}), 200
 
 if __name__ == "__main__":
-    app.run(port=5555, debug=True)
+    app.run(port=5000, debug=True)

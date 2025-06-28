@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import PlayerCard from "../Components/PlayerCard";
-//import "../styles/PlayersPage.css";
 
 function PlayersPage() {
   const [players, setPlayers] = useState([]);

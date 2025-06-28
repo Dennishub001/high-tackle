@@ -17,6 +17,8 @@ importlib-resources = "*"
 Faker = "*"
 sqlalchemy = "*"
 mail = "*"
+cors = "*"
+pyjwt = "*"
 
 [requires]
 python_full_version = "3.8.13"

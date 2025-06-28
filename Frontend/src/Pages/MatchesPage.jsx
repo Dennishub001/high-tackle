@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import MatchCard from "../Components/MatchCard"; // ✅ Make sure this path is correct
+import MatchCard from "../Components/MatchCard";
 
 function MatchesPage() {
   const [matches, setMatches] = useState([]);

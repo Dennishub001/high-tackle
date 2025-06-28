@@ -1,14 +1,8 @@
 # seed.py
-
-# Import your Flask app and models
 from app import app
 from models import db, Member, Player, Coach, Match, MatchParticipant
 from datetime import datetime, timedelta
 import random
-
-# -------------------------------
-# Step 1: Create Member accounts
-# -------------------------------
 
 def create_members():
     print("🌱 Creating club members...")
@@ -37,9 +31,9 @@ def create_members():
             phone=info["phone"],
             email=info["email"],
             role=info["role"],
-            status="active"  # default for new members
+            status="active"  
         )
-        # Set password using the method from your API
+        
         default_password = "admin@123" if info["role"] == "executive" else "rugby@123"
         member.set_password(default_password)
 
@@ -50,9 +44,6 @@ def create_members():
     print(f"✅ {len(members)} members created.\n")
     return members
 
-# -------------------------------
-# Step 2: Create Players
-# -------------------------------
 
 def create_players(members):
     print("🏉 Adding player profiles...")
@@ -83,9 +74,6 @@ def create_players(members):
     print(f"✅ {len(players)} players created.\n")
     return players
 
-# -------------------------------
-# Step 3: Create Coaches
-# -------------------------------
 
 def create_coaches(members):
     print("🧑‍🏫 Adding coaches...")
@@ -112,9 +100,6 @@ def create_coaches(members):
     print(f"✅ {len(coaches)} coaches created.\n")
     return coaches
 
-# -------------------------------
-# Step 4: Create Matches
-# -------------------------------
 
 def create_matches():
     print("📅 Scheduling matches...")
@@ -133,7 +118,7 @@ def create_matches():
 
     for i in range(5):
         date = datetime.now() + timedelta(days=i * 14)
-        is_past = i < 3  # mark first 3 as completed
+        is_past = i < 3  
         home_score = random.randint(10, 25)
         away_score = random.randint(10, 25)
 
@@ -152,9 +137,7 @@ def create_matches():
     print(f"✅ {len(matches)} matches created.\n")
     return matches
 
-# -------------------------------
-# Step 5: Add Match Participants
-# -------------------------------
+
 
 def create_match_participants(players, matches):
     print("📊 Logging match performance stats...")
@@ -190,9 +173,6 @@ def create_match_participants(players, matches):
     print(f"✅ {len(participants)} match participants added.\n")
     return participants
 
-# -------------------------------
-# Run everything in order
-# -------------------------------
 
 def main():
     with app.app_context():

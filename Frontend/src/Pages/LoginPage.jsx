@@ -1,104 +1,73 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-// import Swal from "sweetalert2";
+ import React, { useState } from 'react';
 
-function Login({ setIsLoggedIn }) {
-  const [email, setEmail] = useState("");
-  const navigate = useNavigate();
+const Login = () => {
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
-  const handleLogin = () => {
-    const isSignedUp = localStorage.getItem("isSignedUp");
+  const handleChange = (e) => {
 
-    if (isSignedUp && email) {
-      localStorage.setItem("isLoggedIn", true);
-      setIsLoggedIn(true);
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-      Swal.fire({
-        title: "Welcome!",
-        text: "Login successful!",
-        icon: "success",
-        confirmButtonText: "Continue",
-      }).then(() => {
-        navigate("/");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess(false);
+
+    const { email, password } = formData;
+
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
       });
-    } else {
-      Swal.fire({
-        title: "Login Failed",
-        text: "Email not recognized or not signed up.",
-        icon: "error",
-        confirmButtonText: "Try Again",
-      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setSuccess(true);
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   return (
-    <div className="signup-container">
+    <div className="login-container">
       <h2>Login</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <button onClick={handleLogin} className="signup-form">
-        Login
-      </button>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+        />
+        {error && <p className="error">{error}</p>}
+        {success && <p className="success">Login successful!</p>}
+        <button type="submit">Log In</button>
+      </form>
     </div>
   );
-}
+};
 
 export default Login;
-
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import Swal from "sweetalert2";
-// import axios from "axios";
-
-// function Login({ setIsLoggedIn }) {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState(""); // for secure auth
-//   const navigate = useNavigate();
-
-//   const handleLogin = async () => {
-//     try {
-//       const res = await axios.post("http://localhost:5555/login", {
-//         email,
-//         password,
-//       });
-
-//       const token = res.data.token;
-//       localStorage.setItem("token", token);
-//       setIsLoggedIn(true);
-
-//       Swal.fire("Welcome!", "Login successful!", "success").then(() => {
-//         navigate("/");
-//       });
-//     } catch (error) {
-//       Swal.fire("Login Failed", error?.response?.data?.error || "Invalid credentials", "error");
-//     }
-//   };
-
-//   return (
-//     <div className="signup-container">
-//       <h2>Login</h2>
-//       <input
-//         type="email"
-//         placeholder="Email"
-//         value={email}
-//         onChange={(e) => setEmail(e.target.value)}
-//       />
-//       <input
-//         type="password"
-//         placeholder="Password"
-//         value={password}
-//         onChange={(e) => setPassword(e.target.value)}
-//       />
-//       <button onClick={handleLogin} className="signup-form">
-//         Login
-//       </button>
-//     </div>
-//   );
-// }
-
-// export default Login;
 
