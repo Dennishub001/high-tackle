@@ -1,24 +1,9 @@
-// import React from "react";
-
-// function CoachCard({ coach }) {
-//   return (
-//     <div className="coach-card">
-//       <h3>{coach.member?.name}</h3>
-//       <p><strong>Specialty:</strong> {coach.specialty}</p>
-//       <p><strong>Experience:</strong> {coach.experience_years} years</p>
-//       <p><strong>Certification:</strong> {coach.certification}</p>
-//     </div>
-//   );
-// }
-
-// export default CoachCard;
-
 import React from "react";
 
 function CoachCard({ coach }) {
   return (
     <div className="coach-card">
-      <h3>{coach.member?.name}</h3>
+      <h3>{coach.name}</h3>
       <p><strong>Specialty:</strong> {coach.specialty}</p>
       <p><strong>Experience:</strong> {coach.experience_years} years</p>
       <p><strong>Certification:</strong> {coach.certification}</p>

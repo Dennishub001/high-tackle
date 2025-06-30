@@ -1,4 +1,57 @@
  /* Global Reset and Base Styles */
+
+/* HomePage.css */
+.home-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #fdfdfd;
+  color: #333;
+}
+
+.home-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #004080;
+}
+
+.home-container p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.home-intro {
+  background-color: #f0f8ff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.home-intro h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #006699;
+}
+
+.home-intro ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.home-intro li {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-note {
+  font-style: italic;
+  color: #555;
+  text-align: center;
+}
+
+ 
 * {
   margin: 0;
   padding: 0;
@@ -61,19 +114,19 @@ body {
 
 /* Cards */
 .card-grid {
-  display: grid;
+  display:grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
   
 }
 
-.card {
+/* .card {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   padding: 1rem 1.5rem;
   transition: transform 0.2s ease;
-}
+} */
 
 .card:hover {
   transform: translateY(-3px);
@@ -168,41 +221,358 @@ form textarea:focus {
     align-items: flex-start;
   }
 }
-.coach-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-  width: 250px;
-  background-color: #fff;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.08);
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .player-card, .coach-card {
+    width: 240px;
+    min-width: 240px;
+  }
+  
+  .coaches-list, .players-list {
+    padding: 15px 10px;
+  }
 }
 
-.player-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-  width: 250px;
-  background-color: #fff;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.08);
-}
-
-.member-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-  width: 250px;
-  background-color: #fff;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.08);
-}
-
+/* ===== Base Card Styles ===== */
+.player-card, 
+.coach-card,
+.member-card, 
 .match-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-  width: 250px;
-  background-color: #fff;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 280px;
+  min-width: 280px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin: 10px;
 }
 
- 
- 
+/* Sporty Accent Bar */
+.player-card::before,
+.coach-card::before,
+.member-card::before,
+.match-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(to bottom, #1e5799 0%, #207cca 51%, #2989d8 100%);
+}
+
+/* ===== Card Layout Containers ===== */
+.players-list,
+.coaches-list, 
+.members-list,
+.matches-list {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== Animations ===== */
+@keyframes cardEntrance {
+  0% { opacity: 0; transform: translateX(50px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.player-card,
+.coach-card,
+.member-card,
+.match-card {
+  animation: cardEntrance 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+/* Staggered Animation Delays */
+.player-card:nth-child(1),
+.coach-card:nth-child(1),
+.member-card:nth-child(1),
+.match-card:nth-child(1) { animation-delay: 0.1s; }
+
+.player-card:nth-child(2),
+.coach-card:nth-child(2),
+.member-card:nth-child(2),
+.match-card:nth-child(2) { animation-delay: 0.2s; }
+
+.player-card:nth-child(3),
+.coach-card:nth-child(3),
+.member-card:nth-child(3),
+.match-card:nth-child(3) { animation-delay: 0.3s; }
+
+/* ===== Hover Effects ===== */
+.player-card:hover,
+.coach-card:hover,
+.member-card:hover,
+.match-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== Card Specific Styles ===== */
+/* Match Card Special Styling */
+.match-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.match-card h3 {
+  color: #2c3e50;
+  border-bottom: 2px dashed #2989d8;
+  padding-bottom: 8px;
+}
+
+.match-card .match-date {
+  font-weight: bold;
+  color: #1e5799;
+}
+
+/* Member Card Special Styling */
+.member-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f1faee 100%);
+}
+
+.member-card .member-role {
+  display: inline-block;
+  padding: 3px 10px;
+  background: #2989d8;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
+/* ===== Typography ===== */
+.player-card h3,
+.coach-card h3,
+.member-card h3,
+.match-card h3 {
+  color: #2c3e50;
+  margin-bottom: 0.8rem;
+  font-size: 1.4rem;
+  position: relative;
+}
+
+.player-card h3::after,
+.coach-card h3::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(to right, #2989d8, #1e5799);
+}
+
+/* ===== Scrollbars ===== */
+.players-list::-webkit-scrollbar,
+.coaches-list::-webkit-scrollbar,
+.members-list::-webkit-scrollbar,
+.matches-list::-webkit-scrollbar {
+  height: 8px;
+}
+
+.players-list::-webkit-scrollbar-track,
+.coaches-list::-webkit-scrollbar-track,
+.members-list::-webkit-scrollbar-track,
+.matches-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.players-list::-webkit-scrollbar-thumb,
+.coaches-list::-webkit-scrollbar-thumb,
+.members-list::-webkit-scrollbar-thumb,
+.matches-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(to right, #1e5799, #2989d8);
+  border-radius: 10px;
+}
+
+/* ===== Responsive Adjustments ===== */
+@media (max-width: 768px) {
+  .player-card,
+  .coach-card,
+  .member-card,
+  .match-card {
+    width: 240px;
+    min-width: 240px;
+    padding: 1.2rem;
+  }
+  
+  .players-list,
+  .coaches-list,
+  .members-list,
+  .matches-list {
+    padding: 15px 10px;
+    gap: 15px;
+  }
+}
+
+/* === GLOBAL STYLES === */
+:root {
+  --primary: #1a3a1f; /* Rugby green */
+  --secondary: #0a66c2; /* Navy blue */
+  --accent: #e8b923; /* Gold/yellow for highlights */
+  --light: #f5f5f5;
+  --dark: #333;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--light);
+  color: var(--dark);
+}
+
+/* === HEADER === */
+.header {
+  background-color: var(--primary);
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow);
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-menu a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-menu a:hover {
+  color: var(--accent);
+}
+
+.user-profile {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* === HERO BANNER === */
+.hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+              url('rugby-field.jpg') center/cover no-repeat;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  padding: 2rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.cta-button {
+  background-color: var(--accent);
+  color: var(--dark);
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.cta-button:hover {
+  transform: scale(1.05);
+}
+
+/* === QUICK-ACCESS WIDGETS === */
+.widgets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.widget {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s;
+}
+
+.widget:hover {
+  transform: translateY(-5px);
+}
+
+.widget h3 {
+  color: var(--primary);
+  margin-top: 0;
+}
+
+.widget-button {
+  background-color: var(--secondary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* === ACTIVITY FEED === */
+.activity-feed {
+  background: white;
+  margin: 2rem;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+.activity-item {
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}

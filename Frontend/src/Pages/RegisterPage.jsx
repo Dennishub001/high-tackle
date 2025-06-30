@@ -1,6 +1,5 @@
 import { useFormik } from "formik";
 import Swal from "sweetalert2";
-import axios from "axios";
 
 function RegisterPage() {
   const formik = useFormik({
@@ -8,21 +7,26 @@ function RegisterPage() {
       username: "",
       phone: "",
       email: "",
-      role: "", // player, coach, executive, or member
+      role: "",
       password: "",
     },
 
     onSubmit: async (values) => {
       try {
-        const res = await axios.post("http://localhost:5000/register", values);
-        Swal.fire("Success", res.data.message || "Registered successfully", "success");
+        const response = await fetch("http://localhost:5000/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "An unexpected error occurred.");
+        }
+        Swal.fire("Success", data.message || "Registered successfully", "success");
         formik.resetForm();
       } catch (error) {
-        console.error("Registration Error:", error); // helpful for debugging
-
-        const errorMessage =
-          error.response?.data?.error || "An unexpected error occurred.";
-        Swal.fire("Error", errorMessage, "error");
+        console.error("Registration Error:", error);
+        Swal.fire("Error", error.message, "error");
       }
     },
   });

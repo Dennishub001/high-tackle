@@ -1,12 +1,13 @@
- import React, { useState } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -38,6 +39,8 @@ const Login = () => {
       localStorage.setItem('access_token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user));
       setSuccess(true);
+      // Redirect to home page after successful login
+      navigate('/');
     } catch (err) {
       setError(err.message);
     }
@@ -70,4 +73,3 @@ const Login = () => {
 };
 
 export default Login;
-
