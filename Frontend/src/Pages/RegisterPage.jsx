@@ -1,7 +1,10 @@
 import { useFormik } from "formik";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function RegisterPage() {
+  const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -24,6 +27,7 @@ function RegisterPage() {
         }
         Swal.fire("Success", data.message || "Registered successfully", "success");
         formik.resetForm();
+        navigate("/login"); // Redirect to login page after successful registration
       } catch (error) {
         console.error("Registration Error:", error);
         Swal.fire("Error", error.message, "error");
@@ -81,3 +85,4 @@ function RegisterPage() {
 }
 
 export default RegisterPage;
+
