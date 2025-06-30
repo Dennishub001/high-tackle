@@ -2,6 +2,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import MetaData
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s"
@@ -101,3 +102,16 @@ class MatchParticipant(db.Model, SerializerMixin):
     turnovers_won = db.Column(db.Integer, default=0)
 
     serialize_rules = ('-match', '-player',)
+
+
+class TokenBlocklist(db.Model):
+    __tablename__ = 'token_blocklist'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    
+    __table_args__ = (
+        db.Index('idx_jti_expires', 'jti', 'expires_at'),
+    )

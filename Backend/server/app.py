@@ -2,17 +2,12 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import db, Member, Player, Match, Coach
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 import re
-import jwt
 from datetime import datetime, timedelta
-from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_super_secret_key'
-key = str(app.config['SECRET_KEY'])
-
-
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///hightackle.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
@@ -30,32 +25,42 @@ def is_valid_email(email):
 def home():
     return jsonify({"message": "High Tackle API running"}), 200
 
-#POST Register Member
+# POST Register Member
 @app.route('/register', methods=['POST'])
 def register():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    if not is_valid_email(data.get('email', '')):
-        return jsonify({"error": "Invalid email format"}), 400
+        # Validate required fields
+        required_fields = ['username', 'phone', 'email', 'role', 'password']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"error": f"Missing field: {field}"}), 400
 
-    if Member.query.filter_by(email=data['email']).first():
-        return jsonify({"error": "Email already exists"}), 409
+        if not is_valid_email(data.get('email', '')):
+            return jsonify({"error": "Invalid email format"}), 400
 
-    member = Member(
-        username=data['username'],
-        phone=data['phone'],
-        email=data['email'],
-        role=data['role'],
-        status="active"
-    )
-    member.set_password(data['password'])
+        if Member.query.filter_by(email=data['email']).first():
+            return jsonify({"error": "Email already exists"}), 409
 
-    db.session.add(member)
-    db.session.commit()
+        member = Member(
+            username=data['username'],
+            phone=data['phone'],
+            email=data['email'],
+            role=data['role'],
+            status="active"
+        )
+        member.set_password(data['password'])
 
-    return jsonify({"message": "Member registered successfully", "member": member.username}), 20
+        db.session.add(member)
+        db.session.commit()
 
+        return jsonify({"message": "Member registered successfully", "member": member.username}), 201
+    except Exception as e:
+        print("Registration error:", e)
+        return jsonify({"error": "Server error: " + str(e)}), 500
 
+# POST Login
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -63,13 +68,7 @@ def login():
     password = data.get('password')
 
     member = Member.query.filter_by(email=email).first()
-    if not member:
-        return jsonify({'error': 'Invalid email or password'}), 401
-
-    print(dir(member))
-    print("password_hash:", getattr(member, 'password_hash', None))
-
-    if not check_password_hash(member.password_hash, password):
+    if not member or not check_password_hash(member.password_hash, password):
         return jsonify({'error': 'Invalid email or password'}), 401
 
     return jsonify({
@@ -82,11 +81,10 @@ def login():
         }
     }), 200
 
-#POST Player
+# POST Player
 @app.route('/players', methods=['POST'])
 def create_player():
     data = request.get_json()
-
     try:
         age = int(data['age'])
         height = float(data['height'])
@@ -108,7 +106,7 @@ def create_player():
 
     return jsonify({"message": "Player created", "player": player.name}), 201
 
-#POST Match
+# POST Match
 @app.route('/matches', methods=['POST'])
 def create_match():
     data = request.get_json()
@@ -123,7 +121,7 @@ def create_match():
     db.session.commit()
     return jsonify({"message": "Match created", "match_id": match.id}), 201
 
-#GET Members
+# GET Members
 @app.route('/members', methods=['GET'])
 def get_members():
     members = Member.query.all()
@@ -136,7 +134,7 @@ def get_members():
         "status": m.status
     } for m in members]), 200
 
-#GET All Players
+# GET All Players
 @app.route('/players', methods=['GET'])
 def get_players():
     players = Player.query.all()
@@ -150,7 +148,7 @@ def get_players():
         "member_id": p.member_id
     } for p in players]), 200
 
-#GET All Coaches
+# GET All Coaches
 @app.route('/coaches', methods=['GET'])
 def get_coaches():
     coaches = Coach.query.all()
@@ -163,7 +161,7 @@ def get_coaches():
         "member_id": c.member_id
     } for c in coaches]), 200
 
-#GET All Matches
+# GET All Matches
 @app.route('/matches', methods=['GET'])
 def get_matches():
     matches = Match.query.all()
@@ -176,7 +174,7 @@ def get_matches():
         "score": m.score
     } for m in matches]), 200
 
-#PATCH  Match
+# PATCH Match
 @app.route('/matches/<int:id>', methods=['PATCH'])
 def update_match(id):
     match = Match.query.get(id)
@@ -190,7 +188,7 @@ def update_match(id):
     db.session.commit()
     return jsonify({"message": "Match updated"}), 200
 
-#PATCH Player
+# PATCH Player
 @app.route('/players/<int:id>', methods=['PATCH'])
 def update_player(id):
     player = Player.query.get(id)
@@ -206,7 +204,7 @@ def update_player(id):
     db.session.commit()
     return jsonify({"message": "Player updated"}), 200
 
-#DELETE Player
+# DELETE Player
 @app.route('/players/<int:id>', methods=['DELETE'])
 def delete_player(id):
     player = Player.query.get(id)
